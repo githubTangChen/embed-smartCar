@@ -1,0 +1,6 @@
+---- MotorRun Matches (5 in 4 files) ----
+Main.c (project\application):  MotorRun(250,1);//输出PWM 0.1  正转
+Motor.c (project\devices):void MotorRun(uint32 Duty,char Direction)
+Motor.h (project\devices):void MotorRun(uint32 PwmVaule,char Direction);//马达改变转速
+UART.c (project\drivers):    MotorRun(MotorParameter.MotorDuty,1);//前进
+UART.c (project\drivers):    MotorRun(MotorParameter.MotorDuty,2);//停
