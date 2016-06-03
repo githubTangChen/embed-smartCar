@@ -14,7 +14,9 @@ unsigned int V_Cnt = 0;//行中断触发计数变量
 unsigned char H_Cnt = 0;//行计数变量
 unsigned char CompleteFlag = 0;//图像采集完成标志
 unsigned char BinCompleteFlag = 100;//行二值化完成标志
-
+uint16_t  TimeCount = 0 ;
+uint8_t TIMEflag_1000ms;
+uint8_t TIMEflag_500ms;
 //摄像头控制初始化函数
 void Camera_Init(void)
 {
@@ -288,6 +290,15 @@ void PORTA_IRQHandler(void)
   //场中断
   if(PORTA_ISFR & (1 << 1))//PTA1触发中断
   {
+  	TimeCount++;
+	if(TimeCount%25==0)
+	{
+		TIMEflag_500ms=1;
+	}
+	if(TimeCount%100==0)
+	{
+		TIMEflag_1000ms=1;
+	}
     PTB0_OUT = 1;
     PORTA_ISFR  |= (1 << 1);//写1清中断标志位    
     H_Cnt = 0 ;

@@ -1922,6 +1922,12 @@
     <file>
       <name>$PROJ_DIR$\Application\main.c</name>
     </file>
+    <file>
+      <name>$PROJ_DIR$\Application\OutputData.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Application\OutputData.h</name>
+    </file>
   </group>
   <group>
     <name>Common</name>
@@ -2050,12 +2056,6 @@
     </file>
     <file>
       <name>$PROJ_DIR$\Drivers\MKL_FTFA.h</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\Drivers\PIT.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\Drivers\PIT.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\Drivers\UART.c</name>

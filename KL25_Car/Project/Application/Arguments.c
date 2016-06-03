@@ -11,7 +11,7 @@ void ArgumentsInit()
   PIDVaule.DirectionControlP = 3.8;
   PIDVaule.DirectionControlD = 7.0;
   PIDVaule.SpeedControlP = 0.8;
-  PIDVaule.SpeedControlD = 1.55;
+  PIDVaule.SpeedControlD = 0.1;
   MotorParameter.MotorDuty = 140;//电机初始PWM
   MotorParameter.MiddlePositionDuty = 550;//舵机中间位置对应PWM 0.55
   MotorParameter.ServoMotorDuty = 550;

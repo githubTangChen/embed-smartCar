@@ -9,7 +9,7 @@ extern unsigned char EndPosition;//提前结束的边界行坐标
 extern signed char MidPoints[PICTURE_HIGHT];//中线存储数组
 extern signed char roadFlag;
 extern signed char countTimes;
-float setTargetSpeed = 2.5;
+float setTargetSpeed = 2.0;
 
 STRUCT_MOTORPARAMETER MotorParameter;//电机以及舵机控制变量
 STRUCT_PIDVAULE PIDVaule;
@@ -54,16 +54,16 @@ void ServoMotorSmoothControl(unsigned char Time)
   	i = ControlLine + EndPosition+5;
   if( 40 < i)
   	i = 40;
-   OLED_P6x8Str(90,0,"E");
+   /*OLED_P6x8Str(90,0,"E");
    OLED_PrintValueInt(100,0,EndPosition,2);
     OLED_P6x8Str(90,1,"E");
-    OLED_PrintValueInt(100,1,i,2);
+    OLED_PrintValueInt(100,1,i,2);*/
   //达到分段控制条件
   if (EndPosition <= 15)
   {
       for (j = 0;j < ControlLine ;j++)
       {
-        Error = MidPoints[i] - 34;
+        Error = MidPoints[i] - 30;
         if (Error > 2||Error < -2)
         {
           ErrorSum += Error;
@@ -97,7 +97,7 @@ void ServoMotorSmoothControl(unsigned char Time)
   //达不到
   else
   {
-    Error = MidPoints[i] - 34;
+    Error = MidPoints[i] - 30;
 		ServoDeviation[1] = ServoDeviation[0];
                 ServoDeviation[0] = ((float)Error);
 		ServoDifference[1] = ServoDifference[0];
@@ -118,7 +118,7 @@ void ServoMotorSmoothControl(unsigned char Time)
 	  //SpeedControl(1.8);  
   }
   
-  if((MotorParameter.ServoMotorDuty > 600 || MotorParameter.ServoMotorDuty < 500))
+  /*if((MotorParameter.ServoMotorDuty > 600 || MotorParameter.ServoMotorDuty < 500))
 	{
 	  SpeedControl(setTargetSpeed-0.6); 
 	  return;
@@ -145,7 +145,8 @@ void ServoMotorSmoothControl(unsigned char Time)
 			  SpeedControl(setTargetSpeed);
 		  }
 		}
-	}
+	}*/
+	SpeedControl(setTargetSpeed);
  //OLED_PrintValueInt(75,1,MotorParameter.ServoMotorDuty,3);
 }
 //控制行偏差记录 0 单前偏差  1 上次误差
@@ -167,7 +168,7 @@ void SpeedControl(float targetSpeed)
   Pulse_INT_Count =0;//中断次数清0
   MotorParameter.Speed = ((float)count/OneMeterPulse)/0.02;//获得单前速度
   count = 0;
-  OLED_PrintValueF(90,4,(MotorParameter.Speed),1);
+  //OLED_PrintValueF(90,4,(MotorParameter.Speed),1);
   
   Error = (int16)((targetSpeed -  MotorParameter.Speed) * 50);
   SpeedDeviation[1] = SpeedDeviation[0];
@@ -186,5 +187,10 @@ void SpeedControl(float targetSpeed)
   	MotorParameter.MotorDuty = 160;
   }
   MotorRun(MotorParameter.MotorDuty,FORWARD);
-  
+  //发送速度信息
+    OutData[0] = MotorParameter.Speed*(float)1000;
+    OutData[1] = targetSpeed*(float)1000;
+    OutData[2] = 3*(float)1000;
+    OutData[3] = 3*(float)1000;
+    Output_Data();
 }

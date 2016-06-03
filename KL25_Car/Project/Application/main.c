@@ -13,12 +13,8 @@
 #include "common.h"
 
 const  uint32_t FlashAddress@0x10000;
-uint8_t TIMEflag_5ms  ;
-uint8_t TIMEflag_10ms  ;
-uint8_t TIMEflag_20ms  ;
-uint8_t TIMEflag_30ms  ;
-uint8_t TIMEflag_500ms ;
-uint8_t TIMEflag_300ms ;
+extern uint8_t TIMEflag_1000ms;
+extern uint8_t TIMEflag_500ms;
 
 float speed;
 uint8_t KeyScanResult;//按键扫描结果
@@ -33,7 +29,7 @@ extern uint16 USART_RX_CNT; //接收字符计数
 extern signed char MidPoints[PICTURE_HIGHT];
 extern unsigned char MidLineCompleteFlag;
 extern signed char roadFlag;
-
+extern uint16_t  TimeCount;
 //图像数据//图像数据
 //采集完成后已经被二值化
 //如果为0 代表黑色   为1 代表白色
@@ -85,22 +81,17 @@ void main()
    PTB0_OUT = 0;
   while(1)
   {
-    printf("%d\r\n",(int)(MotorParameter.Speed*100));
-    if (A5_IN ==1)
-    {
-      PORT_PCR_REG(PORTA_BASE_PTR, 1) = (0 | PORT_PCR_MUX(1) | 0x03|PORT_PCR_IRQC(0) );
-      PORT_PCR_REG(PORTA_BASE_PTR, 17) = (0 | PORT_PCR_MUX(1) | 0x02|PORT_PCR_IRQC(0) );
-      MotorRun(0,BRAKING);
-    }
-	/*if(roadFlag & 0x01)
-	{
-		BeepON();
-		//roadFlag &= 0xfe;
-	}
-	else
-	{
-		BeepOFF();
-	}*/
+  	if(TIMEflag_500ms == 1 )
+  	{
+          TIMEflag_500ms=0;
+          KeyScan();
+          showPID();
+  	}
+  	if(TIMEflag_1000ms == 1 )
+  	{
+          TIMEflag_1000ms = 0;
+          TimeCount = 0 ; 
+  	}
   }
   
 }

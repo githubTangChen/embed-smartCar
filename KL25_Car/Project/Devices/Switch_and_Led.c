@@ -5,6 +5,7 @@
 修改日期：2016-3-12
 *****************************************/
 #include "common.h"
+extern float setTargetSpeed;
 //拨码开关初始化
 //PTC1-4输入上拉 ，不允许中断
 void SwitchInit(void)
@@ -108,33 +109,74 @@ void KeyInit(void)
   GPIO_PDDR_REG(PTB_BASE_PTR) &= ~(1 << 18);  //设置端口方向为输入
 }
 //按键与拨码开关扫描
-uint8_t KeyScan(void)
+void KeyScan(void)
 {
   unsigned char Status;
   Status = PTC3_IN | PTC2_IN << 1 | PTC1_IN <<2 | PTC0_IN <<3;
   //OLED_PrintValueInt(90,4,PTC4_IN,3);
-  if (KEY0_IN == KEY_UP)
+  if (KEY0_IN == KEY_UP && KEY1_IN == KEY_UP)
   {
-    return 0;
+    return;
   }
-  else if (Status == ThresholdValueAdd && KEY0_IN == KEY_DOWN)
+  else if (Status == DIRECTION_P && KEY0_IN == KEY_DOWN)
   {
-    return (uint8_t)ThresholdValueAdd;
+    PIDVaule.DirectionControlP += 0.1;
   }
-  else if (Status == ThresholdValueDecrease && KEY0_IN == KEY_DOWN)
+  else if (Status == DIRECTION_P && KEY1_IN == KEY_DOWN)
   {
-    return (uint8_t)ThresholdValueDecrease;
+    PIDVaule.DirectionControlP -= 0.1;
   }
-  else if (Status == MotorDutyAdd && KEY0_IN == KEY_DOWN)
+  else if (Status == DIRECTION_D && KEY0_IN == KEY_DOWN)
   {
-    return (uint8_t)MotorDutyAdd;
+    PIDVaule.DirectionControlD += 0.1;
   }
-  else if (Status == MotorDutyDecrease && KEY0_IN == KEY_DOWN)
+  else if (Status == DIRECTION_D && KEY1_IN == KEY_DOWN)
   {
-    return (uint8_t)MotorDutyDecrease;
+    PIDVaule.DirectionControlD -= 0.1;
   }
-  else
+   else if (Status == SPEED_P && KEY0_IN == KEY_DOWN)
   {
-    return 0;
+    PIDVaule.SpeedControlP += 0.1;
   }
-}
+  else if (Status == SPEED_P && KEY1_IN == KEY_DOWN)
+  {
+    PIDVaule.SpeedControlP -= 0.1;
+  }
+  else if (Status == SPEED_D && KEY0_IN == KEY_DOWN)
+  {
+    PIDVaule.SpeedControlD += 0.1;
+  }
+  else if (Status == SPEED_D && KEY1_IN == KEY_DOWN)
+  {
+    PIDVaule.SpeedControlD -= 0.1;
+  }
+  else if (Status == TARGERTSPEED && KEY0_IN == KEY_DOWN)
+  {
+    setTargetSpeed += 0.1;
+  }
+  else if (Status == TARGERTSPEED && KEY1_IN == KEY_DOWN)
+  {
+    setTargetSpeed -= 0.1;
+  }
+  else if (Status == SAVEDATA && KEY0_IN == KEY_DOWN)
+  {
+    //setTargetSpeed -= 0.1;
+    ;
+  }
+ }
+  //显示PID参数及设定速度
+  void showPID(void)
+  {
+    OLED_P6x8Str(0,0,"DirP");
+    OLED_PrintValueF(50,0,PIDVaule.DirectionControlP,2);
+    OLED_P6x8Str(0,1,"DirD");
+    OLED_PrintValueF(50,1,PIDVaule.DirectionControlD,2);
+	OLED_P6x8Str(0,2,"SpeedP");
+    OLED_PrintValueF(50,2,PIDVaule.SpeedControlP,2);
+    OLED_P6x8Str(0,3,"SpeedD");
+    OLED_PrintValueF(50,3,PIDVaule.SpeedControlD,2);
+	OLED_P6x8Str(0,4,"TSpeed");
+    OLED_PrintValueF(50,4,setTargetSpeed,2);
+	OLED_P6x8Str(0,5,"NSpeed");
+    OLED_PrintValueF(50,5,MotorParameter.Speed,2);
+  }

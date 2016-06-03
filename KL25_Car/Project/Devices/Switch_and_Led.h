@@ -6,10 +6,12 @@
 #ifndef _SWITCH_AND_LED_H_
 #define _SWITCH_AND_LED_H_
 
-#define ThresholdValueAdd 0x07u
-#define ThresholdValueDecrease 0x06u
-#define MotorDutyAdd 0x05u
-#define MotorDutyDecrease 0x04u
+#define DIRECTION_P 0x00u
+#define DIRECTION_D 0x01u
+#define SPEED_P 0x02u
+#define SPEED_D 0x04u
+#define TARGERTSPEED 0x08u
+#define SAVEDATA 0x0Fu
 
 #define KEY_UP     1//对应松开状态
 #define KEY_DOWN   0//对应按键按下状态
@@ -49,5 +51,6 @@ void BeepON(void);//Beep响
 void BeepOFF(void);//Beep关
 void KeyInit(void);//按键初始化
 void RemoteControlInit(void);//遥控引脚初始化
-uint8 KeyScan(void);//按键与拨码开关扫描
+void KeyScan(void);//按键与拨码开关扫描
+void showPID(void);//
 #endif

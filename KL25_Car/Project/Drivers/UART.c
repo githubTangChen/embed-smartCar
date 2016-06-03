@@ -160,34 +160,28 @@ void UART0_IRQHandler(void)
   recv = uart_getchar();
   USART_RX_BUF[USART_RX_CNT++] =  recv;
   if (USART_RX_CNT>19) USART_RX_CNT = 0;
-  if (recv == 'i')//发送图像
-  {
-    SendImage = 0;
-  }
-  else if (recv == 'I')
-  {
-    SendImage = 1;
-  }
-  else if (recv == 'p')
-  {
-    MotorParameter.MotorDuty += 10;
-    printf ("%d ",MotorParameter.MotorDuty);
-  }
-  else if (recv == 'P')
-  {
-    MotorParameter.MotorDuty -= 10;
-    printf ("%d ",MotorParameter.MotorDuty);
-  }
-  else if (recv == 's') 
+  if (recv == 's') 
   {
     SendFlag = 1;//发送标志
   }
-  else if (recv == 'S') 
+  else if (recv == 'S')
   {
     SStartFlag = 1;//速度PID接收标志
+    USART_RX_CNT = 1;
+  }
+  else if (recv == 'D') 
+  {
+    DStartFlag = 1;//方向PID
+    USART_RX_CNT = 1;
+  }
+  else if  (recv == 'a')
+  {
+    PORT_PCR_REG(PORTA_BASE_PTR, 1) = (0 | PORT_PCR_MUX(1) | 0x03|PORT_PCR_IRQC(0) );
+    PORT_PCR_REG(PORTA_BASE_PTR, 17) = (0 | PORT_PCR_MUX(1) | 0x02|PORT_PCR_IRQC(0) );
+    MotorRun(0,BRAKING);
+    ServoMotorChangeDegree(MotorParameter.MiddlePositionDuty);
   }
   if (USART_RX_CNT == 19 && SStartFlag == 1) { SComplishFlag = 1;}
-  if (recv == 'D') {DStartFlag = 1;}//方向PID
   if (USART_RX_CNT == 19 && DStartFlag == 1) { DComplishFlag = 1;}
   /*if (recv == 'Z') {ZStartFlag = 1;}
   if (USART_RX_CNT == 19 && ZStartFlag == 1) { ZComplishFlag = 1;}*/

@@ -81,7 +81,7 @@ typedef	union
 #include  "sysinit.h"
 #include "MCG.h"
 #include "UART.h"
-#include "PIT.h"
+//#include "PIT.h"
 #include "MKL_FTFA.h"
 #include "ADC.h"
 
@@ -97,4 +97,5 @@ typedef	union
 #include "Arguments.h"
 #include "Control.h"
 #include "ImageProcess.h"
+#include "OutputData.h"
 #endif
