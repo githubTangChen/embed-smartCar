@@ -8,9 +8,9 @@
 
 #define MAX_MOTOR_PWM_VAULE            300
 //×î×ó±ß
-#define MAX_SERVOMOTOR_PWM_VAULE       640
+#define MAX_SERVOMOTOR_PWM_VAULE       625
 //×îÓÒ±ß
-#define MIN_SERVOMOTOR_PWM_VAULE       460
+#define MIN_SERVOMOTOR_PWM_VAULE       475
 
 #define Servo_A 0.7
 
