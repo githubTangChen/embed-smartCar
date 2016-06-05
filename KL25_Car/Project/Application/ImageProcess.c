@@ -1,41 +1,81 @@
 /*****************************************
-ÎÄ ¼ş Ãû£ºImageProcess.c
-Ãè    Êö£ºÍ¼Ïñ´¦Àí
-ĞŞ¸ÄÈÕÆÚ£º2016-3-16
+æ–‡ ä»¶ åï¼šImageProcess.c
+æ    è¿°ï¼šå›¾åƒå¤„ç†
+ä¿®æ”¹æ—¥æœŸï¼š2016-3-16
 *****************************************/
 #include "common.h"
-unsigned char EndPosition = 0;//ÌáÇ°½áÊøµÄ±ß½çĞĞ×ø±ê
-unsigned char MidLineCompleteFlag = 0;//ÖĞÏßÌáÈ¡Íê³É±êÖ¾
-signed char MidPoints[PICTURE_HIGHT] = {0};//±£´æÃ¿ĞĞÖĞµã
-signed char Row;//ĞĞ
-signed char Col;//ÁĞ
+unsigned char EndPosition = 0;//æå‰ç»“æŸçš„è¾¹ç•Œè¡Œåæ ‡
+unsigned char MidLineCompleteFlag = 0;//ä¸­çº¿æå–å®Œæˆæ ‡å¿—
+signed char MidPoints[PICTURE_HIGHT] = {0};//ä¿å­˜æ¯è¡Œä¸­ç‚¹
+signed char Row;//è¡Œ
+signed char Col;//åˆ—
 signed char roadFlag;
 signed char countTimes;
-//Í¼ÏñÊı¾İ
+//å›¾åƒæ•°æ®
 extern unsigned char PixData[PICTURE_HIGHT][PICTURE_WIDTH];
 void CenterLineExtractionFullScan(void)
 	{
+		unsigned char Color,Blocks;
 		signed char leftBoudanry=-1,rightBoudanry=-1,midPonit,stop,lastRoadWidth;
 		signed char Error[3],flag;
 		//roadFlag &= 0xfe;
 		countTimes=0;
 		Row=PICTURE_HIGHT-1;
-		//ÕÒÊ×ĞĞµÄÖĞµã
+		//åˆ©ç”¨å‰9è¡Œè¯†åˆ«èµ·è·‘çº¿
+                for(;Row > 50;Row--)
+                {
+                  for (Col = 0;Col < PICTURE_WIDTH-2;Col++)
+                  {
+                    //åªæœ‰è¶…è¿‡ä¸‰ä¸ªè¿ç»­çš„ä¸€æ ·çš„ç‚¹æ‰è®¤ä¸ºæ˜¯ä¸€å—
+                    if (PixData[Row][Col] == 1&&PixData[Row][Col + 1] == 1&&PixData[Row][Col + 2] == 1)
+                    {
+                    	//æ‰¾åˆ°è¿ç»­çš„é¢œè‰²
+                      Color = 1;//èµ·å§‹æ˜¯ç™½è‰²
+                      Blocks = 0;//ä¸€è¡Œçš„å—æ•°ç½®0
+                      break;
+                    }
+                     //åªæœ‰è¶…è¿‡ä¸‰ä¸ªè¿ç»­çš„ä¸€æ ·çš„ç‚¹æ‰è®¤ä¸ºæ˜¯ä¸€å—
+                    if (PixData[Row][Col] == 0&&PixData[Row][Col + 1] == 0&&PixData[Row][Col + 2] == 0)
+                    {
+                      Color = 0;//èµ·å§‹æ˜¯ç™½è‰²
+                      Blocks = 0;//ä¸€è¡Œçš„å—æ•°ç½®0
+                      break;
+                    }
+                  }
+                  Col += 3;
+                      for (;Col < PICTURE_WIDTH-2;Col++)
+                      {
+                        //ä¸€å—ç»“æŸ
+                        if (PixData[Row][Col] != Color&&PixData[Row][Col+1] != Color&&PixData[Row][Col+2] != Color)
+                        {
+                          Blocks ++;
+                          Color = !Color;//ä¸‹ä¸€å—çš„é¢œè‰²åº”è¯¥ä¸åŒ
+                        }
+                      }
+                      //ä¸€è¡Œé‡Œå—æ•°è¶…è¿‡3
+                      if (Blocks > 3)
+                      {
+                        flag ++;
+                      }
+                   
+                }
+               Row=PICTURE_HIGHT-1;
+		//æ‰¾é¦–è¡Œçš„ä¸­ç‚¹
 		for(Col=3;Col<PICTURE_WIDTH-2;Col++)
 		{
-			//ÕÒ×ó±ß½ç
+			//æ‰¾å·¦è¾¹ç•Œ
 			if(PixData[Row][Col]==1 && PixData[Row][Col-1]==0)
 				leftBoudanry=Col;
-			//ÕÒÓÒ±ß½ç
+			//æ‰¾å³è¾¹ç•Œ
 			if(PixData[Row][Col]==0 && PixData[Row][Col-1]==1)
 				rightBoudanry=Col;
 		}
-		//ÕÒµ½×ó±ß½çµ«ÊÇÃ»ÓĞÕÒµ½ÓÒ±ß½çÇÒÓÒ±ß½çÎª°×
+		//æ‰¾åˆ°å·¦è¾¹ç•Œä½†æ˜¯æ²¡æœ‰æ‰¾åˆ°å³è¾¹ç•Œä¸”å³è¾¹ç•Œä¸ºç™½
 		if(rightBoudanry<0 && leftBoudanry>0 && PixData[Row][PICTURE_WIDTH-2]==1)
 		{
 			rightBoudanry=PICTURE_WIDTH-1;
 		}
-		//ÕÒµ½ÓÒ±ß½çµ«ÊÇÃ»ÓĞÕÒµ½×ó±ß½ç
+		//æ‰¾åˆ°å³è¾¹ç•Œä½†æ˜¯æ²¡æœ‰æ‰¾åˆ°å·¦è¾¹ç•Œ
 		if(rightBoudanry>0 && leftBoudanry<0)
 		{
 			leftBoudanry=0;
@@ -95,7 +135,7 @@ void CenterLineExtractionFullScan(void)
 					}
 				}
 			}
-			//×óÓÒ±ß½ç¶¼Ã»ÓĞÕÒµ½
+			//å·¦å³è¾¹ç•Œéƒ½æ²¡æœ‰æ‰¾åˆ°
 			if(leftBoudanry==-1 && rightBoudanry==PICTURE_WIDTH && Row<(PICTURE_WIDTH-10))
 			{
 				leftBoudanry=2;
@@ -124,7 +164,7 @@ void CenterLineExtractionFullScan(void)
 		Error[1] = Error[1] < 0 ? -Error[1] : Error[1];
 		if (Error[2] > 10)
 		{
-			//Ïû³ıÎó²î
+			//æ¶ˆé™¤è¯¯å·®
 			if (Error[0] > Error[1] && Error[1] < 4)
 			{
 				MidPoints[Row] = MidPoints[Row - 1];
@@ -140,25 +180,25 @@ void CenterLineExtractionFullScan(void)
             Error[0] = MidPoints[Row] - MidPoints[Row - 2];
             Error[1] = MidPoints[Row] - MidPoints[Row + 1];
             Error[0] = Error[0] < 0 ? -Error[0] : Error[0];
-			if (Error[0] > 5)//¼òµ¥Îó²îÏû³ı
+			if (Error[0] > 5)//ç®€å•è¯¯å·®æ¶ˆé™¤
             {
                 Error[1] = MidPoints[Row + 1] - MidPoints[Row + 2];
                 for (int i = 0; i< 3; i++)
                 {
-                    PixData[Row - i][MidPoints[Row - i]] = 1;//È¡ÏûÔ­À´ÖĞµã
+                    PixData[Row - i][MidPoints[Row - i]] = 1;//å–æ¶ˆåŸæ¥ä¸­ç‚¹
 					MidPoints[Row-i] = MidPoints[Row - i + 1] + Error[1];
-					PixData[Row - i][MidPoints[Row - i]] = 0;//ÖĞµã±äºÚ
+					PixData[Row - i][MidPoints[Row - i]] = 0;//ä¸­ç‚¹å˜é»‘
                 }
                 Row -= 1;
              }
-             if (MidPoints[Row] > 60 || MidPoints[Row] < 10)//±ß½çµã£¬Ö±½ÓÍË³ö
+             if (MidPoints[Row] > 60 || MidPoints[Row] < 10)//è¾¹ç•Œç‚¹ï¼Œç›´æ¥é€€å‡º
              {
-				PixData[Row][MidPoints[Row]] = 0;//ÖĞµã±äºÚ
+				PixData[Row][MidPoints[Row]] = 0;//ä¸­ç‚¹å˜é»‘
 				break;
              }
 		}
 		if((countTimes>10))
 			roadFlag |= 0x01;
-		EndPosition = Row;//¼ÇÏÂÑ­»·½áÊøÊ±µÄĞĞ×ø±ê
+		EndPosition = Row;//è®°ä¸‹å¾ªç¯ç»“æŸæ—¶çš„è¡Œåæ ‡
 		MidLineCompleteFlag = 1;
 	}
